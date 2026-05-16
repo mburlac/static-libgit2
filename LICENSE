@@ -1,0 +1,36 @@
+MIT License
+
+Copyright (c) 2022 Brian Dewey
+Copyright (c) 2026 Mihai Burlac
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+This package bundles statically-linked builds of the following third-party
+C libraries. Each retains its original license; copies of those licenses
+ship inside their respective vendored source trees during the build.
+
+- libgit2 (https://github.com/libgit2/libgit2) — GPLv2 with linking exception
+- libssh2 (https://www.libssh2.org/) — BSD-3-Clause
+- OpenSSL (https://www.openssl.org/) — Apache-2.0 (3.0.0 and later)
+- PCRE (https://pcre.org/) — BSD-3-Clause
+
+The build script `build-libgit2-framework.sh` orchestrates downloading,
+building, and combining these libraries into a single XCFramework.

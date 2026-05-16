@@ -90,9 +90,9 @@ function build_libpcre() {
         -DPCRE_BUILD_TESTS=NO \
         -DPCRE_SUPPORT_LIBBZ2=NO)
 
-    cmake "${CMAKE_ARGS[@]}" .. >/dev/null 2>/dev/null
+    cmake "${CMAKE_ARGS[@]}" ..
 
-    cmake --build . --target install >/dev/null 2>/dev/null
+    cmake --build . --target install
 }
 
 ### Build openssl for a given platform
@@ -100,10 +100,10 @@ function build_openssl() {
     setup_variables $1 install-openssl
 
     # It is better to remove and redownload the source since building make the source code directory dirty!
-    rm -rf openssl-3.0.0
-    test -f openssl-3.0.0.tar.gz || wget -q https://www.openssl.org/source/openssl-3.0.0.tar.gz
-    tar xzf openssl-3.0.0.tar.gz
-    cd openssl-3.0.0
+    rm -rf openssl-3.0.16
+    test -f openssl-3.0.16.tar.gz || wget -q https://www.openssl.org/source/openssl-3.0.16.tar.gz
+    tar xzf openssl-3.0.16.tar.gz
+    cd openssl-3.0.16
 
     case $PLATFORM in
         "iphoneos")
@@ -131,10 +131,10 @@ function build_openssl() {
     # See https://wiki.openssl.org/index.php/Compilation_and_Installation
     ./Configure --prefix=$REPO_ROOT/install-openssl/$PLATFORM \
         --openssldir=$REPO_ROOT/install-openssl/$PLATFORM \
-        $TARGET_OS no-shared no-dso no-hw no-engine >/dev/null 2>/dev/null
+        $TARGET_OS no-shared no-dso no-hw no-engine
 
-    make >/dev/null 2>/dev/null
-    make install_sw install_ssldirs >/dev/null 2>/dev/null
+    make
+    make install_sw install_ssldirs
     export -n CFLAGS
 }
 
@@ -142,10 +142,10 @@ function build_openssl() {
 function build_libssh2() {
     setup_variables $1 install-libssh2
 
-    rm -rf libssh2-1.10.0
-    test -f libssh2-1.10.0.tar.gz || wget -q https://www.libssh2.org/download/libssh2-1.10.0.tar.gz
-    tar xzf libssh2-1.10.0.tar.gz
-    cd libssh2-1.10.0
+    rm -rf libssh2-1.11.1
+    test -f libssh2-1.11.1.tar.gz || wget -q https://www.libssh2.org/download/libssh2-1.11.1.tar.gz
+    tar xzf libssh2-1.11.1.tar.gz
+    cd libssh2-1.11.1
 
     rm -rf build && mkdir build && cd build
 
@@ -165,21 +165,24 @@ function build_libssh2() {
 function build_libgit2() {
     setup_variables $1 install
 
-    rm -rf libgit2-1.3.0
-    test -f v1.3.0.zip || wget -q https://github.com/libgit2/libgit2/archive/refs/tags/v1.3.0.zip
-    ditto -x -k --sequesterRsrc --rsrc v1.3.0.zip ./
-    cd libgit2-1.3.0
+    rm -rf libgit2-1.9.1
+    test -f v1.9.1.zip || wget -q https://github.com/libgit2/libgit2/archive/refs/tags/v1.9.1.zip
+    ditto -x -k --sequesterRsrc --rsrc v1.9.1.zip ./
+    cd libgit2-1.9.1
 
     rm -rf build && mkdir build && cd build
 
-    # The CMake function that determines if `libssh2_userauth_publickey_frommemory` is defined doesn't
-    # work when everything is statically linked. Manually override GIT_SSH_MEMORY_CREDENTIALS.
-    CMAKE_ARGS+=(-DBUILD_CLAR=NO -DGIT_SSH_MEMORY_CREDENTIALS=1 -DCMAKE_PREFIX_PATH="$REPO_ROOT/install-libssh2/$PLATFORM;$REPO_ROOT/install-openssl/$PLATFORM")
+    # libgit2 1.9 renamed BUILD_CLAR -> BUILD_TESTS and dropped the
+    # GIT_SSH_MEMORY_CREDENTIALS knob (auto-detected now). SSH support
+    # also moved behind USE_SSH=libssh2; without it, the cmake
+    # configure log says "SSH, SSH transport support" under DISABLED
+    # features and the resulting .a links without SFTP/SSH transports.
+    CMAKE_ARGS+=(-DBUILD_TESTS=OFF -DBUILD_CLI=OFF -DUSE_SSH=libssh2 -DCMAKE_PREFIX_PATH="$REPO_ROOT/install-libssh2/$PLATFORM;$REPO_ROOT/install-openssl/$PLATFORM")
 
     echo "cmake ${CMAKE_ARGS[@]} .."
     cmake "${CMAKE_ARGS[@]}" ..
 
-    cmake --build . --target install >/dev/null 2>/dev/null
+    cmake --build . --target install
 }
 
 ### Create xcframework for a given library
