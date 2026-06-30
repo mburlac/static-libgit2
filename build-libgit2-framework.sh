@@ -120,7 +120,10 @@ function build_openssl() {
 
         "macosx"|"macosx-arm64")
             TARGET_OS=darwin64-$ARCH-cc
-            export CFLAGS="-isysroot $SYSROOT";;
+            # Pin the macOS min version, else OpenSSL inherits the build SDK's target (e.g.
+            # macOS 26) and the linker warns "built for newer macOS than being linked (15.0)"
+            # once per libcrypto object (~700 warnings) in any app deploying to macOS 15.
+            export CFLAGS="-isysroot $SYSROOT -mmacosx-version-min=15.0";;
 
         *)
             echo "Unsupported or missing platform!";;
